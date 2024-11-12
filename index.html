@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Shape Changer</title>
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #1a1a1a;
+            overflow: hidden;
+            cursor: none;
+        }
+
+        #shape {
+            position: absolute;
+            background-color: white;
+            transition: transform 0.5s ease-out;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="shape"></div>
+
+    <script>
+        const shape = document.getElementById('shape');
+        let x = 50;
+        let y = 50;
+        let width = 50;
+        let height = 50;
+        let xSpeed = 0;
+        let ySpeed = 0;
+        let shapeType = 'rectangle';
+        let isThrown = false;
+
+        function updateShape() {
+            if (isThrown) {
+                x += xSpeed;
+                y += ySpeed;
+
+                // Check for wall collisions and update speed/shape
+                if (x + width >= window.innerWidth || x <= 0) {
+                    xSpeed *= -1;
+                    changeShape();
+                }
+                if (y + height >= window.innerHeight || y <= 0) {
+                    ySpeed *= -1;
+                    changeShape();
+                }
+            }
+
+            // Update shape position and type
+            if (shapeType === 'rectangle') {
+                shape.style.width = `${width}px`;
+                shape.style.height = `${height}px`;
+                shape.style.borderRadius = '0';
+            } else if (shapeType === 'circle') {
+                shape.style.width = `${width}px`;
+                shape.style.height = `${width}px`;
+                shape.style.borderRadius = '50%';
+            } else if (shapeType === 'triangle') {
+                shape.style.width = '0';
+                shape.style.height = '0';
+                shape.style.borderLeft = `${width / 2}px solid transparent`;
+                shape.style.borderRight = `${width / 2}px solid transparent`;
+                shape.style.borderBottom = `${height}px solid white`;
+            }
+
+            shape.style.left = `${x}px`;
+            shape.style.top = `${y}px`;
+        }
+
+        function changeShape() {
+            if (shapeType === 'rectangle') {
+                shapeType = 'circle';
+            } else if (shapeType === 'circle') {
+                shapeType = 'triangle';
+            } else if (shapeType === 'triangle') {
+                shapeType = 'rectangle';
+            }
+        }
+
+        document.addEventListener('mousemove', (e) => {
+            shape.style.left = `${e.clientX - width / 2}px`;
+            shape.style.top = `${e.clientY - height / 2}px`;
+        });
+
+        document.addEventListener('click', (e) => {
+            xSpeed = (e.clientX - x) / 10;
+            ySpeed = (e.clientY - y) / 10;
+            isThrown = true;
+        });
+
+        setInterval(updateShape, 30);
+    </script>
+</body>
+</html>
